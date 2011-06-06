@@ -4,6 +4,9 @@ import(
 	"testing"
 	"time"
 	"fmt"
+        crand "crypto/rand"
+	"io"
+	"log"
 //	"os"
         "rand"
 //	"./storage"
@@ -53,4 +56,29 @@ func TestRandModule(t *testing.T) {
       p = rand.Int()
       println("Rand.Int() returns ", p)
    }
+}
+
+func TestStringToByteArray(t *testing.T){
+   s := "Hello World"
+   byteArray := []byte(s)
+   fmt.Printf("%s\n",byteArray)
+}
+
+func uuid() string {
+	b := make([]byte, 16)
+	_, err := io.ReadFull(crand.Reader, b)
+	if err != nil {
+		log.Fatal(err)
+	}
+	b[6] = (b[6] & 0x0F) | 0x40
+	b[8] = (b[8] &^ 0x40) | 0x80
+	return fmt.Sprintf("%x-%x-%x-%x-%x", b[:4], b[4:6], b[6:8], b[8:10], b[10:])
+}
+
+
+func TestUuid(t *testing.T) {
+   for i := 0; i < 10; i++ {
+      fmt.Println(uuid())
+   }
+   
 }
