@@ -7,9 +7,9 @@ import(
         crand "crypto/rand"
 	"io"
 	"log"
-//	"os"
+	"os"
         "rand"
-//	"./storage"
+	"encoding/binary"
 )
 
 // Test IndexType const value
@@ -23,14 +23,22 @@ func TestIndexTypeConstValues(t *testing.T) {
 func TestStorageFileForWriting1MilRecords(t *testing.T) {
    ns := -time.Nanoseconds()
 
-//   file := io.File.Create("one_million.dat")
-//   storage := storage.StorageFile.Create(file, 16)
+   keySize := 16
+   storage := NewStorageFile("one_million.dat", keySize)
+   defer storage.Close()
+   
 //   storage.SkipDateTime = true;
 
-   
+   fmt.Printf("Filename: %v\n", storage.Filename)
+
+   for i:= 0; i < 1000000; i++ {
+	d := []byte("Hello World")
+	storage.Write(d)
+   }
+   storage.Flush()
 
    ns += time.Nanoseconds()
-   fmt.Printf("Duration: %.2f seconds\n", float64(ns)/1e9)
+   fmt.Printf("Wrote 1 mil records took: %.2f seconds\n", float64(ns)/1e9)
 }
 
 // Test timer
@@ -61,7 +69,11 @@ func TestRandModule(t *testing.T) {
 func TestStringToByteArray(t *testing.T){
    s := "Hello World"
    byteArray := []byte(s)
-   fmt.Printf("%s\n",byteArray)
+   fmt.Printf("StringToByte[]: %v\n",byteArray)
+   fmt.Printf("IntToByte[]: ") 
+   var d int = 12345
+   binary.Write(os.Stdout, binary.BigEndian, d)
+   fmt.Printf("\n")
 }
 
 func uuid() string {
